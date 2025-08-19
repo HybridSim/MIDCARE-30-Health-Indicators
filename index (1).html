@@ -1,0 +1,331 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>30 Indicators Dashboard – MID-West (MW)</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #111827;
+    --ink: #e5e7eb;
+    --muted: #9ca3af;
+    --accent: #60a5fa;
+  }
+  html, body {
+    background: linear-gradient(180deg, #0b1220, #0f172a 35%);
+    color: var(--ink);
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    margin: 0; padding: 0;
+  }
+  .container { max-width: 1100px; margin: 24px auto; padding: 0 16px 80px; }
+  h1 { font-size: 26px; margin: 8px 0 4px 0; letter-spacing: .3px; }
+  .subtle { color: var(--muted); font-size: 14px; }
+  .card { background: #0b1324; border: 1px solid rgba(255,255,255,.06); border-radius: 14px; padding: 14px; box-shadow: 0 10px 25px rgba(0,0,0,.25); }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 8px; }
+  .btn { background: rgba(96,165,250,.12); color: #dbeafe; border: 1px solid rgba(96,165,250,.4); padding: 8px 12px; border-radius: 999px; cursor: pointer; font-weight: 600; font-size: 14px; }
+  .btn.alt { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.2); color: #e5e7eb; }
+  details.category { border-radius: 16px; background: radial-gradient(1200px 200px at 0% -10%, rgba(96,165,250,.06), transparent), linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)); border: 1px solid rgba(255,255,255,.08); padding: 12px; margin: 14px 0; }
+  details[open] { border-color: rgba(96,165,250,.25); }
+  summary { cursor: pointer; list-style: none; display: flex; align-items: baseline; gap: 10px; }
+  summary::-webkit-details-marker { display: none; }
+  .summary-title { font-weight: 700; font-size: 18px; }
+  .summary-sub { color: var(--muted); font-size: 13px; }
+  .slider-row { display: grid; grid-template-columns: 210px 1fr 170px; gap: 14px; align-items: center; padding: 10px 12px; border-radius: 12px; margin: 6px 0; background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.05); }
+  .label { font-size: 14px; }
+  .unit { color: var(--muted); font-size: 12px; }
+  input[type=range] { width: 100%; height: 28px; -webkit-appearance: none; background: transparent; }
+  input[type=range]::-webkit-slider-runnable-track { height: 6px; border-radius: 999px; background: linear-gradient(90deg, rgba(96,165,250,.3), rgba(96,165,250,.6)); }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; margin-top: -6px; width: 18px; height: 18px; border-radius: 50%; background: white; border: 2px solid var(--accent); box-shadow: 0 4px 10px rgba(0,0,0,.35); }
+  input[type=range]::-moz-range-track { height: 6px; border-radius: 999px; background: linear-gradient(90deg, rgba(96,165,250,.3), rgba(96,165,250,.6)); }
+  input[type=range]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: white; border: 2px solid var(--accent); }
+  .value { font-variant-numeric: tabular-nums; text-align: right; font-weight: 700; }
+  .ref { font-size: 12px; color: var(--muted); text-align: right; }
+  .chart-top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 12px; }
+  select { background: rgba(255,255,255,.06); color: var(--ink); border: 1px solid rgba(255,255,255,.2); border-radius: 10px; padding: 8px 10px; }
+  .axis-caption { color: var(--muted); font-size: 12px; margin-top: 8px; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>30 Indicators Dashboard – MID-West (MW)</h1>
+    <div class="subtle">Prototype control panel with sliders for each indicator. Defaults are the <b>RHA E&nbsp;MW</b> values; “Nat. avg” shown for reference.</div>
+
+    <div class="controls">
+      <button class="btn" id="resetRHA">Reset to RHA E MW defaults</button>
+      <button class="btn alt" id="resetNat">Reset to National averages</button>
+    </div>
+
+    <div id="viz" class="card">
+      <div class="chart-top">
+        <div><b>Category chart:</b></div>
+        <label>Category <select id="catSelect"></select></label>
+        <label>Scale <select id="scaleSelect">
+          <option value="raw">Raw values</option>
+          <option value="pctNat">% of National avg</option>
+          <option value="diff">Difference (RHA − Nat)</option>
+        </select></label>
+      </div>
+      <div style="height: 340px;">
+        <canvas id="catChart"></canvas>
+      </div>
+      <div class="axis-caption"><b>X axis:</b> Value (varies by mode). <b>Y axis:</b> Indicators within the selected category.</div>
+    </div>
+
+    <div id="categories"></div>
+
+    <div class="subtle" style="margin-top:12px;">
+      Tip: Use “% of National avg” for a comparable scale across mixed units (0–200% typical).
+    </div>
+  </div>
+
+<script>
+  // ---- Indicator catalog ----
+  const indicators = [
+    // 1. Demographics
+    {id:'pop_growth_16_22', cat:'Demographics', label:'Population growth (2016–2022)', unit:'%', min:-5, max:15, step:0.1, rha:7.3, nat:8.0},
+    {id:'pop_65_plus', cat:'Demographics', label:'Population aged 65+', unit:'%', min:8, max:25, step:0.1, rha:15.0, nat:13.9},
+    {id:'pop_75_79_growth', cat:'Demographics', label:'Population aged 75–79 growth', unit:'%', min:0, max:60, step:0.5, rha:40.0, nat:25.0},
+    {id:'pop_85_plus_growth', cat:'Demographics', label:'Population aged 85+ growth', unit:'%', min:0, max:50, step:0.5, rha:25.0, nat:20.0},
+    {id:'pop_0_4_trend', cat:'Demographics', label:'Population 0–4 years (trend index)', unit:'index', min:-2, max:2, step:1, rha:-1, nat:-1},
+
+    // 2. Economic
+    {id:'income_tax_contrib', cat:'Economic', label:'Income tax contribution', unit:'%', min:0, max:12, step:0.1, rha:5.5, nat:8.0},
+    {id:'public_health_funding', cat:'Economic', label:'Public health funding', unit:'%', min:0, max:15, step:0.1, rha:7.0, nat:8.0},
+    {id:'avg_weekly_income', cat:'Economic', label:'Average weekly income', unit:'€', min:400, max:1500, step:5, rha:590, nat:640},
+    {id:'per_capita_investment', cat:'Economic', label:'Per capita investment', unit:'€', min:500, max:2000, step:10, rha:1050, nat:1200},
+    {id:'unemployment_15_plus', cat:'Economic', label:'Unemployment aged 15+', unit:'%', min:0, max:20, step:0.1, rha:5.7, nat:5.7},
+
+    // 3. Socioeconomic
+    {id:'prof_mgmt_tech', cat:'Socioeconomic', label:'Professional/Managerial/Technical', unit:'%', min:0, max:100, step:0.1, rha:37.9, nat:39.9},
+    {id:'third_level_education', cat:'Socioeconomic', label:'Third-level education', unit:'%', min:0, max:100, step:0.1, rha:40.7, nat:42.8},
+    {id:'extremely_disadvantaged', cat:'Socioeconomic', label:'Extremely disadvantaged population', unit:'%', min:0, max:10, step:0.1, rha:2.3, nat:1.3},
+    {id:'less_affluent_residents', cat:'Socioeconomic', label:'Less affluent residents', unit:'%', min:0, max:100, step:0.1, rha:22.5, nat:24.9},
+    {id:'no_internet_access', cat:'Socioeconomic', label:'Households with no Internet access', unit:'%', min:0, max:100, step:0.1, rha:11.0, nat:8.7},
+
+    // 4. Dependency
+    {id:'carer_dependency', cat:'Dependency', label:'Carer dependency', unit:'%', min:0, max:100, step:0.1, rha:36.0, nat:34.7},
+    {id:'disability', cat:'Dependency', label:'Disability', unit:'%', min:0, max:50, step:0.1, rha:22.2, nat:21.5},
+    {id:'age_dependency_rate', cat:'Dependency', label:'Age dependency rate', unit:'%', min:0, max:100, step:0.1, rha:35.9, nat:34.7},
+    {id:'avg_home_support', cat:'Dependency', label:'Average home support (weekly)', unit:'minutes', min:0, max:600, step:5, rha:380, nat:397},
+    {id:'unpaid_care', cat:'Dependency', label:'People providing unpaid care', unit:'%', min:0, max:20, step:0.1, rha:6.1, nat:5.8},
+
+    // 5. Health System Capacity
+    {id:'acute_beds_per_1000', cat:'Health System Capacity', label:'Acute beds per 1,000 population', unit:'/1,000', min:0, max:5, step:0.01, rha:1.76, nat:2.91},
+    {id:'ed_consultants_per_100k', cat:'Health System Capacity', label:'ED consultants per 100k', unit:'/100k', min:0, max:10, step:0.01, rha:2.82, nat:3.57},
+    {id:'eds_per_100k', cat:'Health System Capacity', label:'Emergency departments per 100k', unit:'/100k', min:0, max:1, step:0.001, rha:100000/431059, nat:100000/215527},
+    {id:'gps_per_1000', cat:'Health System Capacity', label:'GPs per 1,000 population', unit:'/1,000', min:0, max:1, step:0.01, rha:0.52, nat:0.65},
+    {id:'phi_coverage', cat:'Health System Capacity', label:'Private health insurance coverage', unit:'%', min:0, max:100, step:0.1, rha:53.0, nat:43.0},
+
+    // 6. Healthcare Utilisation
+    {id:'medical_card_holders', cat:'Healthcare Utilisation', label:'Medical card holders', unit:'%', min:0, max:100, step:0.1, rha:35.0, nat:34.0},
+    {id:'gp_usage', cat:'Healthcare Utilisation', label:'GP usage (visits per person / year)', unit:'visits', min:0, max:10, step:0.1, rha:5.5, nat:4.8},
+    {id:'inpatient_nights', cat:'Healthcare Utilisation', label:'Inpatient nights per person / year', unit:'nights', min:0, max:2, step:0.01, rha:0.6, nat:0.78},
+    {id:'self_health_good', cat:'Healthcare Utilisation', label:'Self-perceived health (good/very good)', unit:'%', min:0, max:100, step:0.1, rha:81.3, nat:82.9},
+    {id:'self_health_bad', cat:'Healthcare Utilisation', label:'Self-perceived health (bad/very bad)', unit:'%', min:0, max:20, step:0.01, rha:1.9, nat:1.7},
+  ];
+
+  const categories = [...new Set(indicators.map(d => d.cat))];
+
+  function formatValue(val, unit) {
+    const num = Number(val);
+    if (unit === '%') return num.toFixed(1) + '%';
+    if (unit === '€') return '€' + Math.round(num).toLocaleString();
+    if (unit === '/1,000') return num.toFixed(2) + ' /1,000';
+    if (unit === '/100k') return num.toFixed(3) + ' /100k';
+    if (unit === 'minutes') return Math.round(num) + ' min/wk';
+    if (unit === 'visits') return num.toFixed(1) + ' visits';
+    if (unit === 'nights') return num.toFixed(2) + ' nights';
+    if (unit === 'index') {
+      const labels = { "-2":"strong decline","-1":"decline","0":"stable","1":"growth","2":"strong growth" };
+      return labels[String(Math.round(num))] ?? String(num);
+    }
+    return num.toFixed(2) + ' ' + unit;
+  }
+
+  const container = document.getElementById('categories');
+
+  categories.forEach(cat => {
+    const wrap = document.createElement('details');
+    wrap.className = 'category';
+    wrap.open = true;
+    const sum = document.createElement('summary');
+    sum.innerHTML = `<span class="summary-title">${cat}</span><span class="summary-sub">(${indicators.filter(d=>d.cat===cat).length} indicators)</span>`;
+    wrap.appendChild(sum);
+
+    const box = document.createElement('div');
+    box.className = 'card';
+
+    indicators.filter(d => d.cat === cat).forEach(ind => {
+      const row = document.createElement('div');
+      row.className = 'slider-row';
+
+      const left = document.createElement('div');
+      left.innerHTML = `<div class="label">${ind.label}</div><div class="unit">${ind.unit}</div>`;
+
+      const mid = document.createElement('div');
+      const input = document.createElement('input');
+      input.type = 'range';
+      input.min = ind.min;
+      input.max = ind.max;
+      input.step = ind.step;
+      input.value = ind.rha;
+      input.id = ind.id;
+      mid.appendChild(input);
+
+      const right = document.createElement('div');
+      const value = document.createElement('div');
+      value.className = 'value';
+      value.id = ind.id + '_val';
+      value.textContent = formatValue(ind.rha, ind.unit);
+      const ref = document.createElement('div');
+      ref.className = 'ref';
+      ref.textContent = 'Nat. avg: ' + formatValue(ind.nat, ind.unit);
+      right.appendChild(value);
+      right.appendChild(ref);
+
+      input.addEventListener('input', () => {
+        value.textContent = formatValue(input.value, ind.unit);
+        if (document.getElementById('catSelect').value === ind.cat) redrawChart();
+      });
+
+      row.appendChild(left);
+      row.appendChild(mid);
+      row.appendChild(right);
+      box.appendChild(row);
+    });
+
+    wrap.appendChild(box);
+    container.appendChild(wrap);
+  });
+
+  // Reset buttons
+  document.getElementById('resetRHA').addEventListener('click', () => {
+    indicators.forEach(ind => {
+      const el = document.getElementById(ind.id);
+      const out = document.getElementById(ind.id + '_val');
+      if (el) { el.value = ind.rha; out.textContent = formatValue(ind.rha, ind.unit); }
+    });
+    redrawChart();
+  });
+  document.getElementById('resetNat').addEventListener('click', () => {
+    indicators.forEach(ind => {
+      const el = document.getElementById(ind.id);
+      const out = document.getElementById(ind.id + '_val');
+      if (el) { el.value = ind.nat; out.textContent = formatValue(ind.nat, ind.unit); }
+    });
+    redrawChart();
+  });
+
+  // ----------- Chart.js Horizontal Bar with Scaling Modes -----------
+  const catSelect = document.getElementById('catSelect');
+  categories.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c; opt.textContent = c;
+    catSelect.appendChild(opt);
+  });
+  catSelect.value = categories[0];
+  const scaleSelect = document.getElementById('scaleSelect');
+  let chart;
+
+  function getCurrentVal(id) {
+    const el = document.getElementById(id);
+    return Number(el ? el.value : 0);
+  }
+
+  function shorten(label) {
+    return label.length > 48 ? label.slice(0, 48) + '…' : label;
+  }
+
+  function computeSeries(group, mode) {
+    if (mode === 'raw') {
+      return {
+        labels: group.map(g => shorten(g.label)),
+        cur: group.map(g => getCurrentVal(g.id)),
+        nat: group.map(g => g.nat),
+        xTitle: 'Value (raw units per indicator)'
+      };
+    } else if (mode === 'pctNat') {
+      // 100% == national average
+      return {
+        labels: group.map(g => shorten(g.label)),
+        cur: group.map(g => g.nat === 0 ? 0 : (getCurrentVal(g.id) / g.nat) * 100),
+        nat: group.map(g => 100),
+        xTitle: '% of National average (100 = Nat)'
+      };
+    } else { // diff
+      return {
+        labels: group.map(g => shorten(g.label)),
+        cur: group.map(g => getCurrentVal(g.id) - g.nat),
+        nat: group.map(g => 0),
+        xTitle: 'Difference vs National (RHA − Nat)'
+      };
+    }
+  }
+
+  function redrawChart() {
+    const cat = catSelect.value;
+    const mode = scaleSelect.value;
+    const group = indicators.filter(d => d.cat === cat);
+    const s = computeSeries(group, mode);
+
+    const ctx = document.getElementById('catChart').getContext('2d');
+    if (chart) chart.destroy();
+    chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: s.labels,
+        datasets: [
+          { label: 'RHA E MW (current)', data: s.cur, borderWidth: 1 },
+          { label: (mode==='pctNat' ? '100% = National avg' : 'National baseline'), data: s.nat, borderWidth: 1 }
+        ]
+      },
+      options: {
+        indexAxis: 'y',           // horizontal bars
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', labels: { boxWidth: 12 } },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const ind = group[context.dataIndex];
+                const raw = context.raw;
+                if (mode === 'raw') {
+                  return `${context.dataset.label}: ${formatValue(raw, ind.unit)}`;
+                } else if (mode === 'pctNat') {
+                  return `${context.dataset.label}: ${raw.toFixed(1)}% of Nat`;
+                } else {
+                  return `${context.dataset.label}: ${raw.toFixed(2)} (RHA − Nat)`;
+                }
+              }
+            }
+          },
+          title: { display: true, text: s.xTitle }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            ticks: { autoSkip: true },
+            title: { display: true, text: s.xTitle }
+          },
+          y: {
+            ticks: { autoSkip: false, maxRotation: 0, mirror: false },
+            title: { display: true, text: 'Indicators' }
+          }
+        },
+        elements: {
+          bar: { borderRadius: 4, maxBarThickness: 22, categoryPercentage: 0.8, barPercentage: 0.9 }
+        }
+      }
+    });
+  }
+
+  catSelect.addEventListener('change', redrawChart);
+  scaleSelect.addEventListener('change', redrawChart);
+  redrawChart();
+</script>
+</body>
+</html>
