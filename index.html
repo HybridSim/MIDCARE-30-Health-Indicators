@@ -1,5 +1,5 @@
-
-<!DOCTYPE html>
+# Generate the full light-themed dashboard HTML (with logo, title row, and download button)
+light_html = r"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
@@ -7,51 +7,63 @@
 <title>Determinants of Health Dashboard – MID-West (MW)</title>
 <style>
   :root {
-    --bg: #0f172a;
-    --card: #111827;
-    --ink: #e5e7eb;
-    --muted: #9ca3af;
-    --accent: #60a5fa;
+    --bg: #ffffff;
+    --card: #f8fafc;
+    --ink: #111111;
+    --muted: #555555;
+    --accent-navy: #1e3a8a;
+    --accent-teal: #0d9488;
   }
   html, body {
-    background: linear-gradient(180deg, #0b1220, #0f172a 35%);
+    background: var(--bg);
     color: var(--ink);
     font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
     margin: 0; padding: 0;
   }
   .container { max-width: 1100px; margin: 24px auto; padding: 0 16px 80px; }
-  h1 { font-size: 26px; margin: 8px 0 4px 0; letter-spacing: .3px; }
+  .title-row { display: flex; align-items: center; gap: 12px; }
+  .title-logo { height: 48px; width: auto; }
+  h1 { font-size: 26px; margin: 8px 0 4px 0; letter-spacing: .3px; color: var(--accent-navy); }
   .subtle { color: var(--muted); font-size: 14px; }
-  .card { background: #0b1324; border: 1px solid rgba(255,255,255,.06); border-radius: 14px; padding: 14px; box-shadow: 0 10px 25px rgba(0,0,0,.25); }
+  .card { background: var(--card); border: 1px solid #e5e7eb; border-radius: 14px; padding: 14px; box-shadow: 0 4px 12px rgba(0,0,0,.06); }
   .controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 8px; }
-  .btn { background: rgba(96,165,250,.12); color: #dbeafe; border: 1px solid rgba(96,165,250,.4); padding: 8px 12px; border-radius: 999px; cursor: pointer; font-weight: 600; font-size: 14px; }
-  .btn.alt { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.2); color: #e5e7eb; }
-  details.category { border-radius: 16px; background: radial-gradient(1200px 200px at 0% -10%, rgba(96,165,250,.06), transparent), linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)); border: 1px solid rgba(255,255,255,.08); padding: 12px; margin: 14px 0; }
-  details[open] { border-color: rgba(96,165,250,.25); }
+  .btn { background: var(--accent-navy); color: #fff; border: 1px solid var(--accent-navy); padding: 8px 12px; border-radius: 999px; cursor: pointer; font-weight: 600; font-size: 14px; }
+  .btn:hover { background: #172554; }
+  .btn.alt { background: var(--accent-teal); border-color: var(--accent-teal); color: #fff; }
+  .btn.alt:hover { background: #0f766e; }
+  details.category { border-radius: 16px; background: #fff; border: 1px solid #e5e7eb; padding: 12px; margin: 14px 0; }
+  details[open] { border-color: var(--accent-navy); }
   summary { cursor: pointer; list-style: none; display: flex; align-items: baseline; gap: 10px; }
   summary::-webkit-details-marker { display: none; }
-  .summary-title { font-weight: 700; font-size: 18px; }
+  .summary-title { font-weight: 700; font-size: 18px; color: var(--accent-navy); }
   .summary-sub { color: var(--muted); font-size: 13px; }
-  .slider-row { display: grid; grid-template-columns: 210px 1fr 170px; gap: 14px; align-items: center; padding: 10px 12px; border-radius: 12px; margin: 6px 0; background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.05); }
-  .label { font-size: 14px; }
+  .slider-row { display: grid; grid-template-columns: 210px 1fr 170px; gap: 14px; align-items: center; padding: 10px 12px; border-radius: 12px; margin: 6px 0; background: #f9fafb; border: 1px solid #e5e7eb; }
+  .label { font-size: 14px; color: var(--ink); }
   .unit { color: var(--muted); font-size: 12px; }
   input[type=range] { width: 100%; height: 28px; -webkit-appearance: none; background: transparent; }
-  input[type=range]::-webkit-slider-runnable-track { height: 6px; border-radius: 999px; background: linear-gradient(90deg, rgba(96,165,250,.3), rgba(96,165,250,.6)); }
-  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; margin-top: -6px; width: 18px; height: 18px; border-radius: 50%; background: white; border: 2px solid var(--accent); box-shadow: 0 4px 10px rgba(0,0,0,.35); }
-  input[type=range]::-moz-range-track { height: 6px; border-radius: 999px; background: linear-gradient(90deg, rgba(96,165,250,.3), rgba(96,165,250,.6)); }
-  input[type=range]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: white; border: 2px solid var(--accent); }
-  .value { font-variant-numeric: tabular-nums; text-align: right; font-weight: 700; }
+  input[type=range]::-webkit-slider-runnable-track { height: 6px; border-radius: 999px; background: linear-gradient(90deg, var(--accent-navy), var(--accent-teal)); }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; margin-top: -6px; width: 18px; height: 18px; border-radius: 50%; background: white; border: 2px solid var(--accent-teal); box-shadow: 0 2px 6px rgba(0,0,0,.25); }
+  input[type=range]::-moz-range-track { height: 6px; border-radius: 999px; background: linear-gradient(90deg, var(--accent-navy), var(--accent-teal)); }
+  input[type=range]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: white; border: 2px solid var(--accent-teal); }
+  .value { font-variant-numeric: tabular-nums; text-align: right; font-weight: 700; color: var(--accent-navy); }
   .ref { font-size: 12px; color: var(--muted); text-align: right; }
   .chart-top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 12px; }
-  select { background: rgba(255,255,255,.06); color: var(--ink); border: 1px solid rgba(255,255,255,.2); border-radius: 10px; padding: 8px 10px; }
+  select { background: #f9fafb; color: var(--ink); border: 1px solid #d1d5db; border-radius: 10px; padding: 8px 10px; }
   .axis-caption { color: var(--muted); font-size: 12px; margin-top: 8px; }
+  /* Download button */
+  .dl-wrap { position: fixed; right: 16px; bottom: 16px; z-index: 9999; }
+  .dl-btn { background: var(--accent-navy); color:#fff; border:1px solid var(--accent-navy); padding:10px 14px; border-radius:10px; text-decoration:none; font-weight:700; box-shadow:0 4px 10px rgba(0,0,0,.2); }
+  .dl-btn:hover { background:#172554; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
 </head>
 <body>
   <div class="container">
-    <h1>Determinants of Health Dashboard – MID-West (MW)</h1>
-    <div class="subtle">Prototype control panel with sliders for each indicator. Defaults are the <b>RHA E&nbsp;MW</b> values; “Nat. avg” shown for reference.</div>
+    <div class="title-row">
+      <img src="https://assets.zyrosite.com/AoP61N2BR4i8Q6jl/logo-hsml-AE07eKDgMLFgWBoQ.png" alt="HSML Logo" class="title-logo">
+      <h1>Determinants of Health Dashboard – MID-West (MW)</h1>
+    </div>
+    <div class="subtle">Control panel with sliders for each indicator. Defaults are the <b>RHA E&nbsp;MW</b> values; “Nat. avg” shown for reference.</div>
 
     <div class="controls">
       <button class="btn" id="resetRHA">Reset to RHA E MW defaults</button>
@@ -60,7 +72,7 @@
 
     <div id="viz" class="card">
       <div class="chart-top">
-        <div><b>Category chart:</b></div>
+        <div>Category chart:</div>
         <label>Category <select id="catSelect"></select></label>
         <label>Scale <select id="scaleSelect">
           <option value="raw">Raw values</option>
@@ -68,10 +80,10 @@
           <option value="diff">Difference (RHA − Nat)</option>
         </select></label>
       </div>
-      <div style="height: 340px;">
+      <div style="height: 360px;">
         <canvas id="catChart"></canvas>
       </div>
-      <div class="axis-caption"><b>X axis:</b> Value (varies by mode). <b>Y axis:</b> Indicators within the selected category.</div>
+      <div class="axis-caption">X axis: Value (varies by mode). Y axis: Indicators within the selected category.</div>
     </div>
 
     <div id="categories"></div>
@@ -79,6 +91,11 @@
     <div class="subtle" style="margin-top:12px;">
       Tip: Use “% of National avg” for a comparable scale across mixed units (0–200% typical).
     </div>
+  </div>
+
+  <!-- Floating download button -->
+  <div class="dl-wrap">
+    <a class="dl-btn" href="health_dashboard_light_with_logo.html" download>Download this page</a>
   </div>
 
 <script>
@@ -115,7 +132,7 @@
     // 5. Health System Capacity
     {id:'acute_beds_per_1000', cat:'Health System Capacity', label:'Acute beds per 1,000 population', unit:'/1,000', min:0, max:5, step:0.01, rha:1.76, nat:2.91},
     {id:'ed_consultants_per_100k', cat:'Health System Capacity', label:'ED consultants per 100k', unit:'/100k', min:0, max:10, step:0.01, rha:2.82, nat:3.57},
-    {id:'eds_per_100k', cat:'Health System Capacity', label:'Emergency departments per 100k', unit:'/100k', min:0, max:1, step:0.001, rha:100000/431059, nat:100000/215527},
+    {id:'eds_per_100k', cat:'Health System Capacity', label:'Emergency departments per 100k', unit:'/100k', min:0, max:1, step:0.001, rha:(100000/431059), nat:(100000/215527)},
     {id:'gps_per_1000', cat:'Health System Capacity', label:'GPs per 1,000 population', unit:'/1,000', min:0, max:1, step:0.01, rha:0.52, nat:0.65},
     {id:'phi_coverage', cat:'Health System Capacity', label:'Private health insurance coverage', unit:'%', min:0, max:100, step:0.1, rha:53.0, nat:43.0},
 
@@ -278,8 +295,10 @@
       data: {
         labels: s.labels,
         datasets: [
-          { label: 'RHA E MW (current)', data: s.cur, borderWidth: 1 },
-          { label: (mode==='pctNat' ? '100% = National avg' : 'National baseline'), data: s.nat, borderWidth: 1 }
+          { label: 'RHA E MW (current)', data: s.cur, borderWidth: 1,
+            backgroundColor: 'rgba(30,58,138,0.4)', borderColor: 'rgba(30,58,138,0.9)' }, // navy
+          { label: (mode==='pctNat' ? '100% = National avg' : 'National baseline'), data: s.nat, borderWidth: 1,
+            backgroundColor: 'rgba(13,148,136,0.35)', borderColor: 'rgba(13,148,136,0.9)' } // teal
         ]
       },
       options: {
@@ -303,17 +322,19 @@
               }
             }
           },
-          title: { display: true, text: s.xTitle }
+          title: { display: false }
         },
         scales: {
           x: {
             beginAtZero: true,
             ticks: { autoSkip: true },
-            title: { display: true, text: s.xTitle }
+            title: { display: true, text: s.xTitle, color: '#111' },
+            grid: { color: '#e5e7eb' }
           },
           y: {
-            ticks: { autoSkip: false, maxRotation: 0, mirror: false },
-            title: { display: true, text: 'Indicators' }
+            ticks: { autoSkip: false, maxRotation: 0, mirror: false, color: '#111' },
+            title: { display: true, text: 'Indicators', color: '#111' },
+            grid: { color: '#f1f5f9' }
           }
         },
         elements: {
@@ -329,3 +350,10 @@
 </script>
 </body>
 </html>
+"""
+out_path = "/mnt/data/health_dashboard_light_with_logo.html"
+with open(out_path, "w", encoding="utf-8") as f:
+    f.write(light_html)
+
+out_path
+
