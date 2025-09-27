@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>MIDCARE© Determinants of Health Dashboard – MID-West (MW) — 6 Categories × 5 Sub‑sliders</title>
+<title>MIDCARE© Determinants of Health Dashboard – MID-West (MW) — 6 Categories × 5 Sub‑sliders (Top Row + Compact)</title>
 <style>
   :root {
     --bg: #ffffff;
@@ -13,7 +13,7 @@
     --accent-navy: #1e3a8a;
     --accent-teal: #0d9488;
     --border: #e5e7eb;
-    --radius: 12px;
+    --radius: 10px;
   }
   html, body {
     background: var(--bg);
@@ -22,69 +22,74 @@
     margin: 0; padding: 0;
     overflow-x: hidden;
   }
-  .container { max-width: 1200px; margin: 16px auto; padding: 0 14px 48px; }
+  .container { max-width: 1320px; margin: 14px auto; padding: 0 10px 36px; }
 
   .title-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .title-logo { height: 36px; width: auto; }
-  h1 { font-size: 20px; margin: 6px 0 2px 0; color: var(--accent-navy); }
-  .subtle { color: var(--muted); font-size: 12px; }
+  .title-logo { height: 34px; width: auto; }
+  h1 { font-size: 20px; margin: 4px 0; color: var(--accent-navy); }
+  .subtle { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
 
-  .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.06); }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px; box-shadow: 0 3px 10px rgba(0,0,0,.05); }
 
-  .controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
-  .btn { background: var(--accent-navy); color: #fff; border: 1px solid var(--accent-navy); padding: 8px 12px; border-radius: 999px; cursor: pointer; font-weight: 700; font-size: 12px; }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 10px; }
+  .btn { background: var(--accent-navy); color: #fff; border: 1px solid var(--accent-navy); padding: 6px 10px; border-radius: 999px; cursor: pointer; font-weight: 700; font-size: 12px; }
   .btn.alt { background: var(--accent-teal); border-color: var(--accent-teal); }
   .btn:hover { filter: brightness(.96); }
 
-  /* --- Category grid with 5 sub-sliders each --- */
+  /* --- Category grid: 6 across on desktop --- */
   .cat-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
   }
-  @media (max-width: 980px) { .cat-grid { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 620px) { .cat-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 1180px) { .cat-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 780px) { .cat-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 520px) { .cat-grid { grid-template-columns: 1fr; } }
 
   .cat-card {
     background: #fff;
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 10px;
+    border-radius: 10px;
+    padding: 6px;
   }
   .cat-title {
     font-weight: 900;
     color: var(--accent-navy);
-    font-size: 12px;
-    margin-bottom: 6px;
+    font-size: 11px;
+    margin-bottom: 4px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
+  /* Compact sub-rows: label above slider; tighter spacing */
   .sub-row {
     display: grid;
-    grid-template-columns: 1fr 1fr 80px;
-    gap: 8px;
-    align-items: center;
-    padding: 6px 8px;
+    grid-template-columns: 1fr;
+    gap: 2px;
+    padding: 2px 4px;
+    margin-bottom: 3px;
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 6px;
     background: #f9fafb;
-    margin-bottom: 6px;
   }
-  .sub-left { font-size: 11px; }
-  .sub-left .unit { color: var(--muted); font-size: 10px; }
-  input[type=range] { width: 100%; height: 18px; -webkit-appearance: none; background: transparent; }
-  input[type=range]::-webkit-slider-runnable-track { height: 5px; border-radius: 999px; background: linear-gradient(90deg, var(--accent-navy), var(--accent-teal)); }
-  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; margin-top: -6px; width: 12px; height: 12px; border-radius: 50%; background: white; border: 2px solid var(--accent-teal); box-shadow: 0 1px 4px rgba(0,0,0,.18); }
-  input[type=range]::-moz-range-track { height: 5px; border-radius: 999px; background: linear-gradient(90deg, var(--accent-navy), var(--accent-teal)); }
-  input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: white; border: 2px solid var(--accent-teal); }
-  .val { text-align: right; font-variant-numeric: tabular-nums; font-weight: 800; color: var(--accent-navy); font-size: 11px; }
-  .ref { text-align: right; color: var(--muted); font-size: 10px; margin-top: -2px; }
+  .lbl { font-size: 9.5px; font-weight: 600; color: var(--ink); line-height: 1.2; }
+  .unit { font-size: 8.5px; color: var(--muted); }
+  input[type=range] { width: 100%; height: 14px; -webkit-appearance: none; background: transparent; }
+  input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 999px; background: linear-gradient(90deg, var(--accent-navy), var(--accent-teal)); }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; margin-top: -4px; width: 10px; height: 10px; border-radius: 50%; background: white; border: 2px solid var(--accent-teal); }
+  input[type=range]::-moz-range-track { height: 4px; border-radius: 999px; background: linear-gradient(90deg, var(--accent-navy), var(--accent-teal)); }
+  input[type=range]::-moz-range-thumb { width: 10px; height: 10px; border-radius: 50%; background: white; border: 2px solid var(--accent-teal); }
+  .val { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; color: var(--accent-navy); font-size: 9.5px; }
+  .ref { text-align: right; color: var(--muted); font-size: 9px; margin-top: -2px; }
 
   /* Chart area */
   .viz { margin-top: 12px; }
-  .chart-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 12px; }
-  select { background: #fff; border: 1px solid #d1d5db; border-radius: 8px; padding: 6px 8px; font-size: 12px; }
-  .chart-wrap { height: 360px; }
-  .axis-caption { color: var(--muted); font-size: 11px; margin-top: 6px; }
+  .chart-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 12px; }
+  select { background: #fff; border: 1px solid #d1d5db; border-radius: 8px; padding: 4px 6px; font-size: 12px; }
+  .chart-wrap { height: 280px; } /* reduced height to fit one screen */
+  .axis-caption { color: var(--muted); font-size: 11px; margin-top: 4px; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
 </head>
@@ -99,16 +104,13 @@
       to reflect the changes, comparing the adjusted RHA E&nbsp;MW values against the national baseline. The reset buttons
       restore either the original RHA defaults or the national averages.
     </p>
-    <div class="subtle">
-      Six categories at the top. Each card contains <b>five sliders</b> (sub-indicators) with default values set to the <b>RHA E&nbsp;MW</b> figures you provided; “Nat. avg” is shown for reference.
-    </div>
 
     <div class="controls">
       <button class="btn" id="resetRHA">Reset to RHA E MW defaults</button>
       <button class="btn alt" id="resetNat">Reset to National averages</button>
     </div>
 
-    <!-- Top grid with category cards and 5 sub-sliders each -->
+    <!-- Six compact category cards across the top -->
     <div id="catGrid" class="cat-grid"></div>
 
     <!-- Chart below -->
@@ -208,11 +210,14 @@
       const row = document.createElement('div');
       row.className = 'sub-row';
 
-      const left = document.createElement('div');
-      left.className = 'sub-left';
-      left.innerHTML = `<div class="lbl">${ind.label}</div><div class="unit">${ind.unit}</div>`;
+      const lbl = document.createElement('div');
+      lbl.className = 'lbl';
+      lbl.textContent = ind.label;
 
-      const mid = document.createElement('div');
+      const unit = document.createElement('div');
+      unit.className = 'unit';
+      unit.textContent = ind.unit;
+
       const input = document.createElement('input');
       input.type = 'range';
       input.min = ind.min;
@@ -220,27 +225,26 @@
       input.step = ind.step;
       input.value = ind.rha;     // start at RHA defaults
       input.id = ind.id;
-      mid.appendChild(input);
 
-      const right = document.createElement('div');
       const val = document.createElement('div');
       val.className = 'val';
       val.id = ind.id + '_val';
       val.textContent = formatValue(ind.rha, ind.unit);
+
       const ref = document.createElement('div');
       ref.className = 'ref';
       ref.textContent = 'Nat. avg: ' + formatValue(ind.nat, ind.unit);
-      right.appendChild(val);
-      right.appendChild(ref);
 
       input.addEventListener('input', () => {
         val.textContent = formatValue(input.value, ind.unit);
         if (document.getElementById('catSelect').value === ind.cat) redrawChart();
       });
 
-      row.appendChild(left);
-      row.appendChild(mid);
-      row.appendChild(right);
+      row.appendChild(lbl);
+      row.appendChild(unit);
+      row.appendChild(input);
+      row.appendChild(val);
+      row.appendChild(ref);
       card.appendChild(row);
     });
 
@@ -355,7 +359,7 @@
           x: { beginAtZero: true, ticks: { autoSkip: true }, title: { display: true, text: s.xTitle }, grid: { color: '#e5e7eb' } },
           y: { ticks: { autoSkip: false, maxRotation: 0 }, grid: { color: '#f1f5f9' } }
         },
-        elements: { bar: { borderRadius: 3, maxBarThickness: 20, categoryPercentage: 0.8, barPercentage: 0.9 } }
+        elements: { bar: { borderRadius: 3, maxBarThickness: 18, categoryPercentage: 0.8, barPercentage: 0.9 } }
       }
     });
   }
@@ -367,6 +371,7 @@
 </script>
 </body>
 </html>
+
 
 
 
