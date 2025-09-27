@@ -180,7 +180,23 @@
     {id:'self_health_bad', cat:'Healthcare Utilisation', label:'Self-perceived health (bad/very bad)', min:0, max:20, step:0.01, rha:1.9, nat:1.7},
   ];
 
- 
+  const categories = [...new Set(indicators.map(d => d.cat))];
+
+  function formatValue(val, unit) {
+    const num = Number(val);
+    if (unit === '%') return num.toFixed(1) + '%';
+    if (unit === '€') return '€' + Math.round(num).toLocaleString();
+    if (unit === '/1,000') return num.toFixed(2) + ' /1,000';
+    if (unit === '/100k') return num.toFixed(3) + ' /100k';
+    if (unit === 'minutes') return Math.round(num) + ' min/wk';
+    if (unit === 'visits') return num.toFixed(1) + ' visits';
+    if (unit === 'nights') return num.toFixed(2) + ' nights';
+    if (unit === 'index') {
+      const labels = { "-2":"strong decline","-1":"decline","0":"stable","1":"growth","2":"strong growth" };
+      return labels[String(Math.round(num))] ?? String(num);
+    }
+    return num.toFixed(2) + ' ' + unit;
+  }
 
   // Build the category cards with 5 sub-sliders each
   const grid = document.getElementById('catGrid');
