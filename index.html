@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>MIDCARE© Determinants of Health Dashboard – MID-West (MW)</title>
+<title>MIDCARE© Determinants of Health Dashboard – MID-West (MW) — 6 Categories × 5 Sub‑sliders</title>
 <style>
   :root {
     --bg: #ffffff;
@@ -13,90 +13,83 @@
     --accent-navy: #1e3a8a;
     --accent-teal: #0d9488;
     --border: #e5e7eb;
+    --radius: 12px;
   }
   html, body {
     background: var(--bg);
     color: var(--ink);
     font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
     margin: 0; padding: 0;
-    overflow-x: hidden; /* prevent accidental horizontal scroll */
+    overflow-x: hidden;
   }
-  .container { max-width: 1100px; margin: 24px auto; padding: 0 16px 80px; }
-  .title-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-  .title-logo { height: 48px; width: auto; }
-  h1 { font-size: 26px; margin: 8px 0 4px 0; letter-spacing: .3px; color: var(--accent-navy); }
-  .subtle { color: var(--muted); font-size: 14px; }
-  .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px; box-shadow: 0 4px 12px rgba(0,0,0,.06); }
-  .controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 8px; }
-  .btn { background: var(--accent-navy); color: #fff; border: 1px solid var(--accent-navy); padding: 8px 12px; border-radius: 999px; cursor: pointer; font-weight: 600; font-size: 14px; }
-  .btn:hover { background: #172554; }
-  .btn.alt { background: var(--accent-teal); border-color: var(--accent-teal); color: #fff; }
-  .btn.alt:hover { background: #0f766e; }
+  .container { max-width: 1400px; margin: 16px auto; padding: 0 14px 48px; }
 
-  details.category { border-radius: 16px; background: #fff; border: 1px solid var(--border); padding: 12px; margin: 14px 0; }
-  details[open] { border-color: var(--accent-navy); }
-  summary { cursor: pointer; list-style: none; display: flex; align-items: baseline; gap: 10px; }
-  summary::-webkit-details-marker { display: none; }
-  .summary-title { font-weight: 700; font-size: 18px; color: var(--accent-navy); }
-  .summary-sub { color: var(--muted); font-size: 13px; }
+  .title-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .title-logo { height: 36px; width: auto; }
+  h1 { font-size: 22px; margin: 6px 0 2px 0; color: var(--accent-navy); }
+  .subtle { color: var(--muted); font-size: 12px; margin: 6px 0; }
 
-  /* --- Slider rows --- */
-  .slider-row { 
-    display: grid; 
-    grid-template-columns: clamp(160px, 34%, 220px) 1fr clamp(120px, 28%, 170px); 
-    gap: 14px; align-items: center; 
-    padding: 10px 12px; border-radius: 12px; margin: 6px 0; 
-    background: #f9fafb; border: 1px solid var(--border); 
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.06); }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+  .btn { background: var(--accent-navy); color: #fff; border: 1px solid var(--accent-navy); padding: 8px 12px; border-radius: 999px; cursor: pointer; font-weight: 700; font-size: 12px; }
+  .btn.alt { background: var(--accent-teal); border-color: var(--accent-teal); }
+  .btn:hover { filter: brightness(.96); }
+
+  /* --- SIX category cards across the top (desktop) --- */
+  .cat-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(210px, 1fr));
+    gap: 10px;
+    margin-top: 8px;
   }
-  .slider-row .left .label { font-size: 14px; color: var(--ink); }
-  .slider-row .left .unit { color: var(--muted); font-size: 12px; }
-  input[type=range] { width: 100%; height: 28px; -webkit-appearance: none; background: transparent; }
-  input[type=range]::-webkit-slider-runnable-track { height: 6px; border-radius: 999px; background: linear-gradient(90deg, var(--accent-navy), var(--accent-teal)); }
-  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; margin-top: -6px; width: 18px; height: 18px; border-radius: 50%; background: white; border: 2px solid var(--accent-teal); box-shadow: 0 2px 6px rgba(0,0,0,.25); }
-  input[type=range]::-moz-range-track { height: 6px; border-radius: 999px; background: linear-gradient(90deg, var(--accent-navy), var(--accent-teal)); }
-  input[type=range]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: white; border: 2px solid var(--accent-teal); }
-  .value { font-variant-numeric: tabular-nums; text-align: right; font-weight: 700; color: var(--accent-navy); }
-  .ref { font-size: 12px; color: var(--muted); text-align: right; }
+  @media (max-width: 1320px) { .cat-grid { grid-template-columns: repeat(3, minmax(240px, 1fr)); } }
+  @media (max-width: 900px)  { .cat-grid { grid-template-columns: repeat(2, minmax(240px, 1fr)); } }
+  @media (max-width: 620px)  { .cat-grid { grid-template-columns: 1fr; } }
 
-  .chart-top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 12px; }
-  select { background: #f9fafb; color: var(--ink); border: 1px solid #d1d5db; border-radius: 10px; padding: 8px 10px; }
+  .cat-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 8px;
+  }
+  .cat-title {
+    font-weight: 900;
+    color: var(--accent-navy);
+    font-size: 12px;
+    margin-bottom: 6px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
 
-  .axis-caption { color: var(--muted); font-size: 12px; margin-top: 8px; }
+  /* Compact sub-row with title ABOVE slider to save width */
+  .sub-row {
+    display: grid;
+    grid-template-columns: 1fr 74px; /* unit | value line */
+    gap: 6px;
+    align-items: center;
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #f9fafb;
+    margin-bottom: 6px;
+  }
+  .sub-left { font-size: 11px; grid-column: 1 / 3; }
+  .sub-left .lbl { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sub-left .unit { color: var(--muted); font-size: 10px; }
+  input[type=range] { grid-column: 1 / 3; width: 100%; height: 18px; -webkit-appearance: none; background: transparent; }
+  input[type=range]::-webkit-slider-runnable-track { height: 5px; border-radius: 999px; background: linear-gradient(90deg, var(--accent-navy), var(--accent-teal)); }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; margin-top: -6px; width: 12px; height: 12px; border-radius: 50%; background: white; border: 2px solid var(--accent-teal); box-shadow: 0 1px 4px rgba(0,0,0,.18); }
+  input[type=range]::-moz-range-track { height: 5px; border-radius: 999px; background: linear-gradient(90deg, var(--accent-navy), var(--accent-teal)); }
+  input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: white; border: 2px solid var(--accent-teal); }
+  .val { text-align: right; font-variant-numeric: tabular-nums; font-weight: 800; color: var(--accent-navy); font-size: 11px; }
+  .ref { text-align: right; color: var(--muted); font-size: 10px; margin-top: -2px; display: none; }
 
-  /* Chart area height moved to CSS for responsive control */
+  /* Chart area */
+  .viz { margin-top: 12px; }
+  .chart-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 12px; }
+  select { background: #fff; border: 1px solid #d1d5db; border-radius: 8px; padding: 6px 8px; font-size: 12px; }
   .chart-wrap { height: 360px; }
-
-  /* --- Mobile optimizations --- */
-  @media (max-width: 640px) {
-    .container { padding: 0 12px 64px; margin: 16px auto; }
-    .title-logo { height: 40px; }
-    h1 { font-size: 20px; }
-    .summary-title { font-size: 16px; }
-    .summary-sub { font-size: 12px; }
-
-    .slider-row { 
-      grid-template-columns: 1fr; 
-      gap: 10px; 
-      padding: 8px; 
-    }
-    .slider-row .left { display:flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-    .slider-row .left .label { font-size: 13px; }
-    .slider-row .left .unit { font-size: 11px; }
-    .slider-row .right { display:flex; justify-content: space-between; align-items: baseline; gap: 10px; }
-    .value { font-size: 13px; }
-    .ref { font-size: 11px; }
-
-    input[type=range] { height: 24px; }
-    input[type=range]::-webkit-slider-thumb { width: 16px; height: 16px; margin-top: -5px; }
-    input[type=range]::-moz-range-thumb { width: 16px; height: 16px; }
-
-    .chart-top { flex-direction: column; align-items: flex-start; gap: 8px; }
-    .chart-wrap { height: 280px; } /* shorter chart on phones */
-  }
-
-  @media (max-width: 380px) {
-    .chart-wrap { height: 240px; }
-  }
+  .axis-caption { color: var(--muted); font-size: 11px; margin-top: 6px; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
 </head>
@@ -106,14 +99,25 @@
       <img src="https://assets.zyrosite.com/AoP61N2BR4i8Q6jl/logo-hsml-AE07eKDgMLFgWBoQ.png" alt="HSML Logo" class="title-logo">
       <h1>MIDCARE© Determinants of Health Dashboard – MID-West (MW)</h1>
     </div>
-    <div class="subtle">Control panel with sliders for each indicator. Defaults are the <b>RHA E&nbsp;MW</b> values; “Nat. avg” shown for reference.</div>
+    <p class="subtle">
+      Use the sliders in each category box to adjust the five indicators for that category. The chart below updates instantly
+      to reflect the changes, comparing the adjusted RHA E&nbsp;MW values against the national baseline. The reset buttons
+      restore either the original RHA defaults or the national averages.
+    </p>
+    <div class="subtle">
+    
+    </div>
 
     <div class="controls">
       <button class="btn" id="resetRHA">Reset to RHA E MW defaults</button>
       <button class="btn alt" id="resetNat">Reset to National averages</button>
     </div>
 
-    <div id="viz" class="card">
+    <!-- Top grid with category cards and 5 sub-sliders each -->
+    <div id="catGrid" class="cat-grid"></div>
+
+    <!-- Chart below -->
+    <div id="viz" class="card viz">
       <div class="chart-top">
         <div>Category chart:</div>
         <label>Category <select id="catSelect"></select></label>
@@ -128,22 +132,16 @@
       </div>
       <div class="axis-caption">X axis: Value (varies by mode). Y axis: Indicators within the selected category.</div>
     </div>
-
-    <div id="categories"></div>
-
-    <div class="subtle" style="margin-top:12px;">
-      Tip: Use “% of National avg” for a comparable scale across mixed units.
-    </div>
   </div>
 
 <script>
-  // ---- Indicator catalog ----
+  // ---- Full indicator list (6 × 5) ----
   const indicators = [
     // 1. Demographics
-    {id:'pop_growth_16_22', cat:'Demographics', label:'Population growth (2016–2022)', unit:'%', min:-5, max:15, step:0.1, rha:7.3, nat:8.0},
+    {id:'pop_growth_16_22', cat:'Demographics', label:'Population growth', unit:'%', min:-5, max:15, step:0.1, rha:7.3, nat:8.0},
     {id:'pop_65_plus', cat:'Demographics', label:'Population aged 65+', unit:'%', min:8, max:25, step:0.1, rha:15.0, nat:13.9},
-    {id:'pop_75_79_growth', cat:'Demographics', label:'Population aged 75–79 growth', unit:'%', min:0, max:60, step:0.5, rha:40.0, nat:25.0},
-    {id:'pop_85_plus_growth', cat:'Demographics', label:'Population aged 85+ growth', unit:'%', min:0, max:50, step:0.5, rha:25.0, nat:20.0},
+    {id:'pop_75_79_growth', cat:'Demographics', label:'Population aged 75–79', unit:'%', min:0, max:60, step:0.5, rha:40.0, nat:25.0},
+    {id:'pop_85_plus_growth', cat:'Demographics', label:'Population aged 85+', unit:'%', min:0, max:50, step:0.5, rha:25.0, nat:20.0},
     {id:'pop_0_4_trend', cat:'Demographics', label:'Population 0–4 years (trend index)', unit:'index', min:-2, max:2, step:1, rha:-1, nat:-1},
 
     // 2. Economic
@@ -200,63 +198,51 @@
     return num.toFixed(2) + ' ' + unit;
   }
 
-  const container = document.getElementById('categories');
-
+  // Build the category cards with 5 sub-sliders each
+  const grid = document.getElementById('catGrid');
   categories.forEach(cat => {
-    const wrap = document.createElement('details');
-    wrap.className = 'category';
-    wrap.open = true;
-    const sum = document.createElement('summary');
-    sum.innerHTML = `<span class="summary-title">${cat}</span><span class="summary-sub">(${indicators.filter(d=>d.cat===cat).length} indicators)</span>`;
-    wrap.appendChild(sum);
+    const card = document.createElement('div');
+    card.className = 'cat-card';
 
-    const box = document.createElement('div');
-    box.className = 'card';
+    const title = document.createElement('div');
+    title.className = 'cat-title';
+    title.textContent = cat;
+    card.appendChild(title);
 
-    indicators.filter(d => d.cat === cat).forEach(ind => {
+    indicators.filter(d=>d.cat===cat).forEach(ind => {
       const row = document.createElement('div');
-      row.className = 'slider-row';
+      row.className = 'sub-row';
 
       const left = document.createElement('div');
-      left.className = 'left';
-      left.innerHTML = `<div class="label">${ind.label}</div><div class="unit">${ind.unit}</div>`;
+      left.className = 'sub-left';
+      left.innerHTML = `<div class="lbl">${ind.label}</div><div class="unit">${ind.unit}</div>`;
 
-      const mid = document.createElement('div');
-      mid.className = 'mid';
       const input = document.createElement('input');
       input.type = 'range';
       input.min = ind.min;
       input.max = ind.max;
       input.step = ind.step;
-      input.value = ind.rha;
+      input.value = ind.rha;     // start at RHA defaults
       input.id = ind.id;
-      mid.appendChild(input);
 
-      const right = document.createElement('div');
-      right.className = 'right';
-      const value = document.createElement('div');
-      value.className = 'value';
-      value.id = ind.id + '_val';
-      value.textContent = formatValue(ind.rha, ind.unit);
-      const ref = document.createElement('div');
-      ref.className = 'ref';
-      ref.textContent = 'Nat. avg: ' + formatValue(ind.nat, ind.unit);
-      right.appendChild(value);
-      right.appendChild(ref);
+      const val = document.createElement('div');
+      val.className = 'val';
+      val.id = ind.id + '_val';
+      val.textContent = formatValue(ind.rha, ind.unit);
+
+      row.appendChild(left);
+      row.appendChild(val);
+      row.appendChild(input);
 
       input.addEventListener('input', () => {
-        value.textContent = formatValue(input.value, ind.unit);
+        val.textContent = formatValue(input.value, ind.unit);
         if (document.getElementById('catSelect').value === ind.cat) redrawChart();
       });
 
-      row.appendChild(left);
-      row.appendChild(mid);
-      row.appendChild(right);
-      box.appendChild(row);
+      card.appendChild(row);
     });
 
-    wrap.appendChild(box);
-    container.appendChild(wrap);
+    grid.appendChild(card);
   });
 
   // Reset buttons
@@ -294,7 +280,7 @@
   }
 
   function shorten(label) {
-    return label.length > 48 ? label.slice(0, 48) + '…' : label;
+    return label.length > 52 ? label.slice(0, 52) + '…' : label;
   }
 
   function computeSeries(group, mode) {
@@ -303,10 +289,9 @@
         labels: group.map(g => shorten(g.label)),
         cur: group.map(g => getCurrentVal(g.id)),
         nat: group.map(g => g.nat),
-        xTitle: 'Value (raw units per indicator)'
+        xTitle: 'Raw values'
       };
     } else if (mode === 'pctNat') {
-      // 100% == national average
       return {
         labels: group.map(g => shorten(g.label)),
         cur: group.map(g => g.nat === 0 ? 0 : (getCurrentVal(g.id) / g.nat) * 100),
@@ -337,9 +322,9 @@
         labels: s.labels,
         datasets: [
           { label: 'RHA E MW (current)', data: s.cur, borderWidth: 1,
-            backgroundColor: 'rgba(30,58,138,0.4)', borderColor: 'rgba(30,58,138,0.9)' }, // navy
+            backgroundColor: 'rgba(30,58,138,0.45)', borderColor: 'rgba(30,58,138,0.9)' },
           { label: (mode==='pctNat' ? '100% = National avg' : 'National baseline'), data: s.nat, borderWidth: 1,
-            backgroundColor: 'rgba(13,148,136,0.35)', borderColor: 'rgba(13,148,136,0.9)' } // teal
+            backgroundColor: 'rgba(13,148,136,0.35)', borderColor: 'rgba(13,148,136,0.9)' }
         ]
       },
       options: {
@@ -347,7 +332,7 @@
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: 'top', labels: { boxWidth: 12 } },
+          legend: { position: 'top', labels: { boxWidth: 10, font: { size: 11 } } },
           tooltip: {
             callbacks: {
               label: function(context) {
@@ -362,24 +347,26 @@
                 }
               }
             }
-          },
-          title: { display: false }
+          }
         },
         scales: {
-          x: { beginAtZero: true, ticks: { autoSkip: true, color: '#111' }, title: { display: true, text: s.xTitle, color: '#111' }, grid: { color: '#e5e7eb' } },
-          y: { ticks: { autoSkip: false, maxRotation: 0, mirror: false, color: '#111' }, title: { display: true, text: 'Indicators', color: '#111' }, grid: { color: '#f1f5f9' } }
+          x: { beginAtZero: true, ticks: { autoSkip: true }, title: { display: true, text: s.xTitle }, grid: { color: '#e5e7eb' } },
+          y: { ticks: { autoSkip: false, maxRotation: 0 }, grid: { color: '#f1f5f9' } }
         },
-        elements: { bar: { borderRadius: 4, maxBarThickness: 22, categoryPercentage: 0.8, barPercentage: 0.9 } }
+        elements: { bar: { borderRadius: 3, maxBarThickness: 20, categoryPercentage: 0.8, barPercentage: 0.9 } }
       }
     });
   }
 
   catSelect.addEventListener('change', redrawChart);
   scaleSelect.addEventListener('change', redrawChart);
+  // initial render uses RHA defaults already placed into the sliders
   redrawChart();
 </script>
 </body>
 </html>
+
+
 
 
 
