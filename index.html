@@ -1,6 +1,4 @@
-# Create the requested HTML with the same working logic,
-# but arranging the 6 category cards in a single row across the top.
-html_content = r"""<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
@@ -24,12 +22,12 @@ html_content = r"""<!DOCTYPE html>
     margin: 0; padding: 0;
     overflow-x: hidden;
   }
-  .container { max-width: 1400px; margin: 16px auto; padding: 0 14px 48px; }
+  .container { max-width: 1200px; margin: 16px auto; padding: 0 14px 48px; }
 
   .title-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .title-logo { height: 36px; width: auto; }
-  h1 { font-size: 22px; margin: 6px 0 2px 0; color: var(--accent-navy); }
-  .subtle { color: var(--muted); font-size: 12px; margin: 6px 0; }
+  h1 { font-size: 20px; margin: 6px 0 2px 0; color: var(--accent-navy); }
+  .subtle { color: var(--muted); font-size: 12px; }
 
   .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.06); }
 
@@ -38,36 +36,32 @@ html_content = r"""<!DOCTYPE html>
   .btn.alt { background: var(--accent-teal); border-color: var(--accent-teal); }
   .btn:hover { filter: brightness(.96); }
 
-  /* --- SIX category cards across the top (desktop) --- */
+  /* --- Category grid with 5 sub-sliders each --- */
   .cat-grid {
     display: grid;
-    grid-template-columns: repeat(6, minmax(210px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 10px;
-    margin-top: 8px;
   }
-  @media (max-width: 1320px) { .cat-grid { grid-template-columns: repeat(3, minmax(240px, 1fr)); } }
-  @media (max-width: 900px)  { .cat-grid { grid-template-columns: repeat(2, minmax(240px, 1fr)); } }
-  @media (max-width: 620px)  { .cat-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 980px) { .cat-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 620px) { .cat-grid { grid-template-columns: 1fr; } }
 
   .cat-card {
     background: #fff;
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 8px;
+    padding: 10px;
   }
   .cat-title {
     font-weight: 900;
     color: var(--accent-navy);
     font-size: 12px;
     margin-bottom: 6px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
 
-  /* Compact sub-row with title ABOVE slider to save width */
   .sub-row {
     display: grid;
-    grid-template-columns: 1fr 74px; /* unit | value line */
-    gap: 6px;
+    grid-template-columns: 1fr 1fr 80px;
+    gap: 8px;
     align-items: center;
     padding: 6px 8px;
     border: 1px solid var(--border);
@@ -75,16 +69,15 @@ html_content = r"""<!DOCTYPE html>
     background: #f9fafb;
     margin-bottom: 6px;
   }
-  .sub-left { font-size: 11px; grid-column: 1 / 3; }
-  .sub-left .lbl { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sub-left { font-size: 11px; }
   .sub-left .unit { color: var(--muted); font-size: 10px; }
-  input[type=range] { grid-column: 1 / 3; width: 100%; height: 18px; -webkit-appearance: none; background: transparent; }
+  input[type=range] { width: 100%; height: 18px; -webkit-appearance: none; background: transparent; }
   input[type=range]::-webkit-slider-runnable-track { height: 5px; border-radius: 999px; background: linear-gradient(90deg, var(--accent-navy), var(--accent-teal)); }
   input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; margin-top: -6px; width: 12px; height: 12px; border-radius: 50%; background: white; border: 2px solid var(--accent-teal); box-shadow: 0 1px 4px rgba(0,0,0,.18); }
   input[type=range]::-moz-range-track { height: 5px; border-radius: 999px; background: linear-gradient(90deg, var(--accent-navy), var(--accent-teal)); }
   input[type=range]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: white; border: 2px solid var(--accent-teal); }
   .val { text-align: right; font-variant-numeric: tabular-nums; font-weight: 800; color: var(--accent-navy); font-size: 11px; }
-  .ref { text-align: right; color: var(--muted); font-size: 10px; margin-top: -2px; display: none; }
+  .ref { text-align: right; color: var(--muted); font-size: 10px; margin-top: -2px; }
 
   /* Chart area */
   .viz { margin-top: 12px; }
@@ -219,6 +212,7 @@ html_content = r"""<!DOCTYPE html>
       left.className = 'sub-left';
       left.innerHTML = `<div class="lbl">${ind.label}</div><div class="unit">${ind.unit}</div>`;
 
+      const mid = document.createElement('div');
       const input = document.createElement('input');
       input.type = 'range';
       input.min = ind.min;
@@ -226,21 +220,27 @@ html_content = r"""<!DOCTYPE html>
       input.step = ind.step;
       input.value = ind.rha;     // start at RHA defaults
       input.id = ind.id;
+      mid.appendChild(input);
 
+      const right = document.createElement('div');
       const val = document.createElement('div');
       val.className = 'val';
       val.id = ind.id + '_val';
       val.textContent = formatValue(ind.rha, ind.unit);
-
-      row.appendChild(left);
-      row.appendChild(val);
-      row.appendChild(input);
+      const ref = document.createElement('div');
+      ref.className = 'ref';
+      ref.textContent = 'Nat. avg: ' + formatValue(ind.nat, ind.unit);
+      right.appendChild(val);
+      right.appendChild(ref);
 
       input.addEventListener('input', () => {
         val.textContent = formatValue(input.value, ind.unit);
         if (document.getElementById('catSelect').value === ind.cat) redrawChart();
       });
 
+      row.appendChild(left);
+      row.appendChild(mid);
+      row.appendChild(right);
       card.appendChild(row);
     });
 
@@ -366,11 +366,7 @@ html_content = r"""<!DOCTYPE html>
   redrawChart();
 </script>
 </body>
-</html>"""
-path="/mnt/data/midcare_dashboard_6cats_5subs_TOPROW.html"
-with open(path,"w",encoding="utf-8") as f:
-    f.write(html_content)
-path
+</html>
 
 
 
